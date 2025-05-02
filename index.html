@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="menu">
+    <h1>Chess Game</h1>
+    <button onclick="startGame('2p')">2 Player</button>
+    <button onclick="startGame('ai')">AI vs Player</button>
+  </div>
+
+  <div id="game" style="display:none">
+    <div id="chessboard"></div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="chess-ai.js"></script>
+</body>
+</html>
