@@ -60,8 +60,9 @@ function renderBoard() {
 }
 
 function handleClick(row, col) {
+  //console.log("Clicked:", row, col); 
   const piece = board[row][col];
-
+  
   // Selection
   if (selected) {
     const [sr, sc] = selected;
@@ -74,7 +75,8 @@ function handleClick(row, col) {
       board[sr][sc] = null;
       selected = null;
       renderBoard();
-      switchPlayer();
+      setTimeout(()=> switchPlayer(),50);
+      
     } else {
       selected = null;
       renderBoard();
@@ -91,6 +93,7 @@ function handleClick(row, col) {
 
 // Function to check if the king is in check
 function isKingInCheck(color) {
+  //console.log("king in check initiated");
   const kingPos = findKingPosition(color);
   const opponentColor = color === 'white' ? 'black' : 'white';
   
@@ -100,7 +103,9 @@ function isKingInCheck(color) {
       if (piece && piece.color === opponentColor) {
         const validMoves = getValidMoves(r, c);
         if (validMoves.some(m => m[0] === kingPos[0] && m[1] === kingPos[1])) {
+          alert("King is in check");
           return true; // The king is in check
+         
         }
       }
     }
@@ -109,10 +114,11 @@ function isKingInCheck(color) {
 }
 
 // Function to find the position of a player's king
-function findKingPosition(color) {
+function findKingPosition(color,boardState = board) {
+ // console.log("find");
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
-      const piece = board[r][c];
+      const piece = boardState[r][c];
       if (piece && piece.color === color && piece.type === 'king') {
         return [r, c]; // Return the king's position
       }
@@ -123,8 +129,11 @@ function findKingPosition(color) {
 
 // Function to check for checkmate
 function isCheckmate() {
-  if (!isKingInCheck(currentPlayer)) return false; // No checkmate if the king is not in check
-
+  const inCheck=isKingInCheck(currentPlayer);
+ // console.log(`Is ${currentPlayer} in check?`, inCheck);
+  if (!inCheck)
+   return false; // No checkmate if the king is not in check
+  
   // Check if there are any valid moves that can get the player out of check
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
@@ -149,14 +158,14 @@ function isCheckmate() {
 
 // Function to check if the king is in check after a hypothetical move
 function isKingInCheckAfterMove(tempBoard, color) {
-  const kingPos = findKingPosition(color);
+  const kingPos = findKingPosition(color,tempBoard);
   const opponentColor = color === 'white' ? 'black' : 'white';
   
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       const piece = tempBoard[r][c];
       if (piece && piece.color === opponentColor) {
-        const validMoves = getValidMovesForBoard(r, c, tempBoard);
+        const validMoves = getValidMoves(r, c, tempBoard,false);
         if (validMoves.some(m => m[0] === kingPos[0] && m[1] === kingPos[1])) {
           return true; // The king is still in check after the move
         }
@@ -251,13 +260,16 @@ function getValidMoves(r, c, boardState = board, checkSafety = true) {
 // 2. Now, you can place your `switchPlayer` function after the helper functions
 
 function switchPlayer() {
-  if (isCheckmate()) {
-    alert(`${currentPlayer} is in checkmate!`);
-    return; // End the game when checkmate occurs
-  }
+ 
 
   currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
   
+  if (isCheckmate()) {
+    console.log("check triggered");
+    alert(`${currentPlayer} is in checkmate! , Resetting game.....`);
+    startGame(mode);
+    return; // End the game when checkmate occurs
+  }
   if (mode === 'ai' && currentPlayer === 'black') {
     isAITurn = true;
     setTimeout(() => {
@@ -282,27 +294,16 @@ function highlightMoves(moves) {
 function getPieceValue(type) {
   switch (type) {
     case 'pawn': return 1;
-    case 'knight':
+    case 'knight':return 3;
     case 'bishop': return 3;
     case 'rook': return 5;
     case 'queen': return 9;
-    case 'king': return 100; // rarely captured, but for completeness
+    case 'king': return 1000; // rarely captured, but for completeness
     default: return 0;
   }
 }
 
 
-function findKingPosition(color, boardState = board) {
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      const piece = boardState[r][c];
-      if (piece && piece.type === 'king' && piece.color === color) {
-        return [r, c];
-      }
-    }
-  }
-  return null;
-}
 
 function isUnderAttack(boardState, r, c, color) {
   for (let i = 0; i < 8; i++) {
@@ -318,4 +319,7 @@ function isUnderAttack(boardState, r, c, color) {
   }
   return false;
 }
+
+
+
 
