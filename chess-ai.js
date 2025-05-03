@@ -6,7 +6,7 @@ function aiMove(board) {
     for (let c = 0; c < 8; c++) {
       const piece = board[r][c];
       if (piece && piece.color === 'black') {
-        const moves = getValidMoves(r, c, board); // Pass board explicitly if needed
+        const moves = getValidMoves(r, c, board,false); // Pass board explicitly if needed
 
         for (const [mr, mc] of moves) {
           const target = board[mr][mc];
@@ -27,8 +27,8 @@ function aiMove(board) {
           }
 
           // Safe square bonus
-          if (!wouldBeCaptured(tempBoard, mr, mc, 'black')) {
-            score += 0.5;
+          if(!isUnderAttack(tempBoard,r,c,'white')){
+            score+=0.5;
           }
 
           if (score > bestScore) {
@@ -50,7 +50,7 @@ function aiMove(board) {
     board[fr][fc] = null;
 
     renderBoard();
-    highlightKingInCheck('white');
+   // highlightKingInCheck('white');
     switchPlayer();
   } else {
     console.log("AI has no legal moves.");
