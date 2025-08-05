@@ -1,2 +1,2 @@
 # Chess-game
-this ia Chess game
+this is Chess game
